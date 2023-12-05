@@ -153,7 +153,7 @@ class JavaServer(MCServer):
         result = await pinger.read_status()
         return result
 
-    def query(self) -> QueryResponse:
+    def query(self, **kwargs) -> QueryResponse:
         """Checks the status of a Minecraft Java Edition server via the query protocol."""
         # TODO: WARNING: This try-except for NXDOMAIN is only done because
         # of failing tests on mac-os, which for some reason can't resolve 'localhost'
@@ -167,8 +167,8 @@ class JavaServer(MCServer):
 
         return self._retry_query(Address(ip, self.address.port))
 
-    @retry(tries=3)
-    def _retry_query(self, addr: Address) -> QueryResponse:
+    @retry(tries=1)
+    def _retry_query(self, addr: Address, **kwargs) -> QueryResponse:
         with UDPSocketConnection(addr, self.timeout) as connection:
             querier = ServerQuerier(connection)
             querier.handshake()
