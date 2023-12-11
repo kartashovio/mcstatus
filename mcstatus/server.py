@@ -165,7 +165,7 @@ class JavaServer(MCServer):
             warnings.warn(f"Resolving IP for {self.address.host} failed with NXDOMAIN")
             ip = self.address.host
 
-        return self._retry_query(Address(ip, self.address.port))
+        return self._retry_query(Address(ip, self.address.port), **kwargs)
 
     @retry(tries=1)
     def _retry_query(self, addr: Address, **kwargs) -> QueryResponse:
