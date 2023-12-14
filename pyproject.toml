@@ -93,6 +93,7 @@ bump = true
 enable = true
 style = "pep440"
 vcs = "git"
+pattern  = "^(?P<base>\\d+\\.\\d+\\.\\d+)(-?((?P<stage>[a-zA-Z]+)\\.?(?P<revision>\\d+)?))?"
 
 [tool.ruff]
 target-version = "py38"
