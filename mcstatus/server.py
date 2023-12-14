@@ -97,6 +97,7 @@ class JavaServer(MCServer):
     def _retry_ping(self, connection: TCPSocketConnection, **kwargs) -> float:
         pinger = ServerPinger(connection, address=self.address, **kwargs)
         pinger.handshake()
+        pinger.read_status()
         return pinger.test_ping()
 
     async def async_ping(self, **kwargs) -> float:
@@ -113,6 +114,7 @@ class JavaServer(MCServer):
     async def _retry_async_ping(self, connection: TCPAsyncSocketConnection, **kwargs) -> float:
         pinger = AsyncServerPinger(connection, address=self.address, **kwargs)
         pinger.handshake()
+        pinger.read_status()
         ping = await pinger.test_ping()
         return ping
 
@@ -150,25 +152,25 @@ class JavaServer(MCServer):
         result = await pinger.read_status()
         return result
 
-    def query(self) -> QueryResponse:
+    def query(self, **kwargs) -> QueryResponse:
         """Checks the status of a Minecraft Java Edition server via the query protocol."""
         ip = str(self.address.resolve_ip())
-        return self._retry_query(Address(ip, self.address.port))
+        return self._retry_query(Address(ip, self.address.port), **kwargs)
 
     @retry(tries=3)
-    def _retry_query(self, addr: Address) -> QueryResponse:
+    def _retry_query(self, addr: Address, **kwargs) -> QueryResponse:
         with UDPSocketConnection(addr, self.timeout) as connection:
             querier = ServerQuerier(connection)
             querier.handshake()
             return querier.read_query()
 
-    async def async_query(self) -> QueryResponse:
+    async def async_query(self, **kwargs) -> QueryResponse:
         """Asynchronously checks the status of a Minecraft Java Edition server via the query protocol."""
         ip = str(await self.address.async_resolve_ip())
-        return await self._retry_async_query(Address(ip, self.address.port))
+        return await self._retry_async_query(Address(ip, self.address.port), **kwargs)
 
     @retry(tries=3)
-    async def _retry_async_query(self, address: Address) -> QueryResponse:
+    async def _retry_async_query(self, address: Address, **kwargs) -> QueryResponse:
         async with UDPAsyncSocketConnection(address, self.timeout) as connection:
             querier = AsyncServerQuerier(connection)
             await querier.handshake()
