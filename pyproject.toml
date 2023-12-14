@@ -92,6 +92,7 @@ testpaths = ["tests"]
 bump = true
 enable = true
 style = "pep440"
+vcs = "git"
 
 [tool.ruff]
 target-version = "py38"
